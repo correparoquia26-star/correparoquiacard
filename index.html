@@ -25,7 +25,8 @@
                 
                 <div id="moldura-bg" class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('fundo.png');"></div>
                 
-                <div class="absolute inset-0 flex items-center justify-center z-10 overflow-hidden">
+                <div class="absolute top-[36.5%] left-1/2 -translate-x-1/2 w-[64%] h-[42.5%] z-10 overflow-hidden bg-zinc-950/20 flex items-center justify-center">
+                    
                     <img id="user-foto" src="" alt="" class="hidden max-w-none origin-center pointer-events-none" />
                     
                     <div id="foto-placeholder" class="flex flex-col items-center justify-center text-zinc-400 bg-black/50 p-4 rounded-xl space-y-2 px-4 backdrop-blur-sm">
@@ -95,9 +96,10 @@
                 reader.onload = function(event) {
                     userFoto.src = event.target.result;
                     userFoto.classList.remove('hidden');
-                    // Garante que a imagem se ajuste ao contêiner mantendo a proporção
-                    userFoto.style.maxWidth = "100%";
-                    userFoto.style.maxHeight = "100%";
+                    // Garante que a imagem comece preenchendo o espaço interno proporcionalmente
+                    userFoto.style.width = "100%";
+                    userFoto.style.height = "100%";
+                    userFoto.style.objectFit = "cover";
                     fotoPlaceholder.style.display = 'none';
                     painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
                     
