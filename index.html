@@ -24,9 +24,9 @@
                 
                 <div id="moldura-bg" class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('fundo.png');"></div>
                 
-                <div id="wrapper-foto" class="absolute top-[36.5%] left-1/2 -translate-x-1/2 w-[64%] h-[42.5%] z-10 overflow-hidden bg-zinc-950/20 flex items-center justify-center">
+                <div id="user-foto-bg" class="absolute top-[36.5%] left-1/2 -translate-x-1/2 w-[64%] h-[42.5%] z-10 bg-center bg-no-repeat overflow-hidden bg-zinc-950/20 flex items-center justify-center" style="background-size: 100% 100%;">
                     
-                    <img id="user-foto" src="" alt="" class="hidden max-w-none origin-center pointer-events-none transition-none" />
+                    <img id="user-foto" src="" alt="" class="hidden" />
                     
                     <div id="foto-placeholder" class="flex flex-col items-center justify-center text-zinc-400 bg-black/50 p-4 rounded-xl space-y-2 px-4 backdrop-blur-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 stroke-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,11 +53,11 @@
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="text-xs text-zinc-500 w-16">Lado/Lado:</span>
-                        <input type="range" id="slider-x" min="-200" max="200" value="0" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="slider-x" min="-100" max="100" value="0" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="text-xs text-zinc-500 w-16">Cima/Baixo:</span>
-                        <input type="range" id="slider-y" min="-200" max="200" value="0" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="slider-y" min="-100" max="100" value="0" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
                     </div>
                 </div>
 
@@ -71,7 +71,7 @@
     <script>
         const inputFoto = document.getElementById('input-foto');
         const userFoto = document.getElementById('user-foto');
-        const wrapperFoto = document.getElementById('wrapper-foto');
+        const userFotoBg = document.getElementById('user-foto-bg');
         const fotoPlaceholder = document.getElementById('foto-placeholder');
         const cardEvento = document.getElementById('card-evento');
         const btnDownload = document.getElementById('btn-download');
@@ -81,49 +81,13 @@
         const sliderX = document.getElementById('slider-x');
         const sliderY = document.getElementById('slider-y');
 
-        let scale = 1.0; let translateX = 0; let translateY = 0;
+        let zoomVal = 100; let posX = 50; let posY = 50;
 
         function aplicarTransformacoes() {
-            if (!userFoto.complete || userFoto.src === "") return;
-
-            // Medidas reais do quadrado limitador (janela azul)
-            const containerW = wrapperFoto.clientWidth;
-            const containerH = wrapperFoto.clientHeight;
-
-            // Medidas que a imagem ocuparia dentro do container com o aspecto nativo dela
-            const ratioImg = userFoto.naturalWidth / userFoto.naturalHeight;
-            const ratioCont = containerW / containerH;
-
-            let baseW, baseH;
-            if (ratioImg > ratioCont) {
-                baseH = containerH;
-                baseW = containerH * ratioImg;
-            } else {
-                baseW = containerW;
-                baseH = containerW / ratioImg;
-            }
-
-            // Tamanho renderizado final da imagem aplicando o Zoom atual do slider
-            const renderW = baseW * scale;
-            const renderH = baseH * scale;
-
-            // Calcula o deslocamento máximo permitido para que a borda da imagem nunca entre na janela
-            const limitX = Math.max(0, (renderW - containerW) / 2);
-            const limitY = Math.max(0, (renderH - containerH) / 2);
-
-            // Aplica a barreira física (trava os valores de translação)
-            if (translateX > limitX) translateX = limitX;
-            if (translateX < -limitX) translateX = -limitX;
-            if (translateY > limitY) translateY = limitY;
-            if (translateY < -limitY) translateY = -limitY;
-
-            // Atualiza dinamicamente os limites visuais dos controles deslizantes para corresponderem ao limite real
-            sliderX.min = -Math.round(limitX);
-            sliderX.max = Math.round(limitX);
-            sliderY.min = -Math.round(limitY);
-            sliderY.max = Math.round(limitY);
-
-            userFoto.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            // Aplica o tamanho baseado no Zoom (garantindo efeito de "cover" expandido)
+            userFotoBg.style.backgroundSize = `${zoomVal}% ${zoomVal}%`;
+            // Move a posição interna do background (50% é o centro perfeito)
+            userFotoBg.style.backgroundPosition = `${posX}% ${posY}%`;
         }
 
         inputFoto.addEventListener('change', (e) => {
@@ -131,41 +95,45 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    userFoto.src = event.target.result;
+                    const imageSrc = event.target.result;
+                    
+                    // Alimenta a tag oculta para não quebrar a lógica do botão de download original
+                    userFoto.src = imageSrc;
                     userFoto.classList.remove('hidden');
                     
-                    // Inicialização inteligente para cobrir perfeitamente todo o espaço
-                    userFoto.style.width = "auto";
-                    userFoto.style.height = "auto";
-                    userFoto.style.minWidth = "100%";
-                    userFoto.style.minHeight = "100%";
+                    // Aplica a imagem de forma nativa no container limitador
+                    userFotoBg.style.backgroundImage = `url('${imageSrc}')`;
+                    userFotoBg.style.backgroundSize = "cover";
                     
                     fotoPlaceholder.style.display = 'none';
                     painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
                     
-                    scale = 1.0; translateX = 0; translateY = 0;
+                    // Reseta os controles para o centro absoluto sem vazamentos
+                    zoomVal = 100; posX = 50; posY = 50;
                     sliderZoom.value = 100; sliderX.value = 0; sliderY.value = 0;
-                    
-                    // Aguarda o carregamento do arquivo em memória antes de rodar o cálculo matemático de limitação
-                    userFoto.onload = function() {
-                        aplicarTransformacoes();
-                    }
+                    aplicarTransformacoes();
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Eventos atualizados aplicando a restrição em tempo de execução
         sliderZoom.addEventListener('input', (e) => { 
-            scale = e.target.value / 100; 
+            zoomVal = parseInt(e.target.value); 
             aplicarTransformacoes(); 
         });
+
+        // Mapeia o movimento lateral convertendo o slider para porcentagem de background-position
         sliderX.addEventListener('input', (e) => { 
-            translateX = parseFloat(e.target.value); 
+            // Inverte e converte a escala para mover o fundo proporcionalmente ao zoom
+            let deslocamento = (e.target.value / 2);
+            posX = 50 - deslocamento; 
             aplicarTransformacoes(); 
         });
+
+        // Mapeia o movimento vertical convertendo o slider para porcentagem de background-position
         sliderY.addEventListener('input', (e) => { 
-            translateY = parseFloat(e.target.value); 
+            let deslocamento = (e.target.value / 2);
+            posY = 50 - deslocamento; 
             aplicarTransformacoes(); 
         });
 
