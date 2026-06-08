@@ -3,57 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1º Corre Paróquia 2026 - #EUVOU</title>
+    <title>1º Corre Paróquia 2026 - Gerador de Card</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Esconde a barra de rolagem padrão dos inputs de range no mobile para ficar mais limpo */
+        input[type="range"] {
+            accent-color: #10b981;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-4 antialiased">
 
     <div class="max-w-md w-full text-center space-y-6">
-        <header class="space-y-2">
-            <p class="text-emerald-400 font-bold tracking-wider uppercase text-sm">#EUVOU</p>
-            <h1 class="text-3xl font-extrabold tracking-tight">
-                1º Corre Paróquia <span class="text-emerald-500">2026</span>
+        <header class="space-y-1">
+            <h1 class="text-2xl font-extrabold tracking-tight text-zinc-100">
+                Gere seu Card Oficial
             </h1>
-            <p class="text-zinc-400 text-sm">
-                Pires Ferreira - CE • Monte o seu card e mostre que você vai!
+            <p class="text-zinc-400 text-xs">
+                Selecione sua foto e ajuste a posição antes de baixar
             </p>
         </header>
 
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-5">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-2xl space-y-5">
             
-            <div id="card-evento" class="relative aspect-square w-full bg-zinc-800 rounded-xl overflow-hidden border border-zinc-700 flex flex-col justify-between p-6 bg-cover bg-center">
-                <div id="foto-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 space-y-2 pointer-events-none z-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 stroke-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span class="text-xs">A sua foto aparecerá aqui</span>
+            <div id="card-evento" class="relative w-full aspect-[9/16] rounded-xl overflow-hidden shadow-lg border border-zinc-800 bg-black select-none">
+                
+                <div class="absolute inset-0 flex items-center justify-center z-0 overflow-hidden">
+                    <img 
+                        id="user-foto" 
+                        src="" 
+                        alt="" 
+                        class="hidden max-w-none origin-center pointer-events-none"
+                    />
+                    <div id="foto-placeholder" class="flex flex-col items-center justify-center text-zinc-600 space-y-2 px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 stroke-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="text-xs font-medium">Nenhuma foto selecionada</span>
+                    </div>
                 </div>
 
-                <div class="relative z-10 text-left">
-                    <p class="text-emerald-400 font-black text-2xl tracking-widest bg-black/40 inline-block px-2 py-0.5 rounded">#EUVOU</p>
-                </div>
-                
-                <div class="relative z-10 text-left bg-gradient-to-t from-black/90 via-black/50 to-transparent -mx-6 -mb-6 p-6 pt-12">
-                    <h2 id="card-nome" class="font-extrabold text-2xl uppercase tracking-tight text-white truncate drop-shadow-md">Seu Nome Aqui</h2>
-                    <p class="text-xs text-emerald-400 font-medium tracking-wide mt-1">1º CORRE PARÓQUIA 2026</p>
-                </div>
+                <div 
+                    class="absolute inset-0 z-10 pointer-events-none bg-cover bg-center bg-no-repeat"
+                    style="background-image: url('https://lovable.dev/api/v1/projects/0b329d47-c483-4813-8c19-e088bf8e0a8c/assets/167006.jpg');"
+                ></div>
             </div>
 
             <div class="space-y-4 text-left border-t border-zinc-800 pt-4">
+                
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Seu Nome</label>
-                    <input 
-                        type="text" 
-                        id="input-nome"
-                        placeholder="Digite o seu nome completo" 
-                        className="w-full"
-                        class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Sua Foto</label>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">1. Escolha sua melhor foto</label>
                     <input 
                         type="file" 
                         id="input-foto"
@@ -62,61 +62,133 @@
                     />
                 </div>
 
+                <div id="painel-ajustes" class="opacity-40 pointer-events-none transition-all duration-300 space-y-3 bg-zinc-950/50 p-3 rounded-xl border border-zinc-800">
+                    <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">2. Ajuste a posição da foto</p>
+                    
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs text-zinc-500 w-16">Zoom:</span>
+                        <input type="range" id="slider-zoom" min="50" max="300" value="100" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs text-zinc-500 w-16">Lado/Lado:</span>
+                        <input type="range" id="slider-x" min="-200" max="200" value="0" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs text-zinc-500 w-16">Cima/Baixo:</span>
+                        <input type="range" id="slider-y" min="-300" max="300" value="0" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+
                 <button 
                     id="btn-download"
-                    class="w-full bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 active:scale-[0.98]"
+                    class="w-full bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold py-3.5 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 active:scale-[0.98]"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    <span>Baixar Meu Card</span>
+                    <span>Salvar Card no Telefone</span>
                 </button>
             </div>
         </div>
 
         <p class="text-xs text-zinc-600">
-            Partilhe nos stories com a hashtag <span class="text-emerald-500/80 font-semibold">#EuVou</span>
+            Compartilhe nos stories com a hashtag <span class="text-emerald-500/80 font-semibold">#EuVou</span>
         </p>
     </div>
 
     <script>
-        const inputNome = document.getElementById('input-nome');
-        const cardNome = document.getElementById('card-nome');
         const inputFoto = document.getElementById('input-foto');
-        const cardEvento = document.getElementById('card-evento');
+        const userFoto = document.getElementById('user-foto');
         const fotoPlaceholder = document.getElementById('foto-placeholder');
+        const cardEvento = document.getElementById('card-evento');
         const btnDownload = document.getElementById('btn-download');
+        const painelAjustes = document.getElementById('painel-ajustes');
 
-        // Atualizar o nome em tempo real
-        inputNome.addEventListener('input', (e) => {
-            cardNome.textContent = e.target.value.trim() || 'Seu Nome Aqui';
-        });
+        // Seleção dos Sliders
+        const sliderZoom = document.getElementById('slider-zoom');
+        const sliderX = document.getElementById('slider-x');
+        const sliderY = document.getElementById('slider-y');
 
-        // Atualizar a foto de fundo do card
+        // Estado inicial de transformação da imagem
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+
+        function aplicarTransformacoes() {
+            userFoto.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        }
+
+        // Carregar imagem selecionada do dispositivo
         inputFoto.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    cardEvento.style.backgroundImage = `url('${event.target.result}')`;
-                    fotoPlaceholder.style.display = 'none'; // Esconde o texto de aviso
+                    userFoto.src = event.target.result;
+                    userFoto.classList.remove('hidden');
+                    userFoto.style.width = "100%"; // Base padrão ocupando a largura do card
+                    fotoPlaceholder.style.display = 'none';
+                    
+                    // Libera e destaca o painel de ajustes finos
+                    painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
+                    
+                    // Reseta os valores dos sliders ao trocar de imagem
+                    scale = 1;
+                    translateX = 0;
+                    translateY = 0;
+                    sliderZoom.value = 100;
+                    sliderX.value = 0;
+                    sliderY.value = 0;
+                    aplicarTransformacoes();
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Função para gerar a imagem e fazer o download
+        // Escutadores dos Sliders de movimentação manual
+        sliderZoom.addEventListener('input', (e) => {
+            scale = e.target.value / 100;
+            aplicarTransformacoes();
+        });
+
+        sliderX.addEventListener('input', (e) => {
+            translateX = e.target.value;
+            aplicarTransformacoes();
+        });
+
+        sliderY.addEventListener('input', (e) => {
+            translateY = e.target.value;
+            aplicarTransformacoes();
+        });
+
+        // Geração do arquivo de imagem final em alta definição
         btnDownload.addEventListener('click', () => {
-            // Garante uma boa resolução ignorando ligeiramente o scroll do ecrã
+            if(userFoto.src === "" || userFoto.classList.contains('hidden')) {
+                alert("Por favor, selecione uma foto primeiro antes de baixar!");
+                return;
+            }
+
+            btnDownload.innerText = "Processando Imagem...";
+            btnDownload.disabled = true;
+
             html2canvas(cardEvento, {
                 useCORS: true,
-                scale: 2,
-                logging: false
+                scale: 3, // Multiplica por 3 a resolução para ir nítido pro Instagram Stories
+                logging: false,
+                backgroundColor: null
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `card-corre-paroquia-${cardNome.textContent.toLowerCase().replace(/\s+/g, '-')}.png`;
+                link.download = 'card-oficial-corre-paroquia.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+
+                btnDownload.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg><span>Salvar Card no Telefone</span>`;
+                btnDownload.disabled = false;
+            }).catch(err => {
+                alert("Erro ao gerar imagem. Tente novamente.");
+                btnDownload.disabled = false;
             });
         });
     </script>
