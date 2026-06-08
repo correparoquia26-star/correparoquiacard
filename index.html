@@ -1,58 +1,124 @@
-src/routes/index.tsx
-    const user = userImgRef.current;
-    if (!user) return;
-    // Build photo in an offscreen canvas with a vertical feathered alpha mask
-    const off = document.createElement("canvas");
-    off.width = W;
-    off.height = H;
-    const octx = off.getContext("2d")!;
-    // cover-fit photo across full width of canvas, then apply user zoom + offsets
-    const baseScale = Math.max(W / user.naturalWidth, H / user.naturalHeight);
-    // Slot rectangle in canvas pixels
-    const sx = SLOT.x * W;
-    const sy = SLOT.y * H;
-    const sw = SLOT.w * W;
-    const sh = SLOT.h * H;
-    // Cover-fit photo inside the slot, then apply zoom
-    const baseScale = Math.max(sw / user.naturalWidth, sh / user.naturalHeight);
-    const scale = baseScale * zoom;
-    const dw = user.naturalWidth * scale;
-    const dh = user.naturalHeight * scale;
-    const dx = (W - dw) / 2 + offsetX * W;
-    const dy = (H - dh) / 2 + offsetY * H;
-    octx.drawImage(user, dx, dy, dw, dh);
-    // Feathered mask: only show photo within the safe band, fading at top/bottom
-    octx.globalCompositeOperation = "destination-in";
-    const yTop = BAND.yTop * H;
-    const yBot = BAND.yBottom * H;
-    const feather = FEATHER * H;
-    const grad = octx.createLinearGradient(0, 0, 0, H);
-    const t1 = (yTop - feather) / H;
-    const t2 = yTop / H;
-    const t3 = yBot / H;
-    const t4 = (yBot + feather) / H;
-    grad.addColorStop(Math.max(0, t1), "rgba(0,0,0,0)");
-    grad.addColorStop(Math.max(0, t2), "rgba(0,0,0,1)");
-    grad.addColorStop(Math.min(1, t3), "rgba(0,0,0,1)");
-    grad.addColorStop(Math.min(1, t4), "rgba(0,0,0,0)");
-    octx.fillStyle = grad;
-    octx.fillRect(0, 0, W, H);
-    octx.globalCompositeOperation = "source-over";
-    ctx.drawImage(off, 0, 0);
-    // Clamp offsets so the photo never exposes the slot background
-    const maxOffX = Math.max(0, (dw - sw) / 2);
-    const maxOffY = Math.max(0, (dh - sh) / 2);
-    const offPxX = offsetX * sw;
-    const offPxY = offsetY * sh;
-    const clampedX = Math.max(-maxOffX, Math.min(maxOffX, offPxX));
-    const clampedY = Math.max(-maxOffY, Math.min(maxOffY, offPxY));
-    const dx = sx + (sw - dw) / 2 + clampedX;
-    const dy = sy + (sh - dh) / 2 + clampedY;
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(sx, sy, sw, sh);
-    ctx.clip();
-    ctx.drawImage(user, dx, dy, dw, dh);
-    ctx.restore();
-  }, [offsetX, offsetY, zoom]);
-  useEffect(() => {
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1º Corre Paróquia 2026 - #EUVOU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body class="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-4 antialiased">
+
+    <div class="max-w-md w-full text-center space-y-6">
+        <header class="space-y-2">
+            <p class="text-emerald-400 font-bold tracking-wider uppercase text-sm">#EUVOU</p>
+            <h1 class="text-3xl font-extrabold tracking-tight">
+                1º Corre Paróquia <span class="text-emerald-500">2026</span>
+            </h1>
+            <p class="text-zinc-400 text-sm">
+                Pires Ferreira - CE • Monte o seu card e mostre que você vai!
+            </p>
+        </header>
+
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-5">
+            
+            <div id="card-evento" class="relative aspect-square w-full bg-zinc-800 rounded-xl overflow-hidden border border-zinc-700 flex flex-col justify-between p-6 bg-cover bg-center">
+                <div id="foto-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 space-y-2 pointer-events-none z-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 stroke-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-xs">A sua foto aparecerá aqui</span>
+                </div>
+
+                <div class="relative z-10 text-left">
+                    <p class="text-emerald-400 font-black text-2xl tracking-widest bg-black/40 inline-block px-2 py-0.5 rounded">#EUVOU</p>
+                </div>
+                
+                <div class="relative z-10 text-left bg-gradient-to-t from-black/90 via-black/50 to-transparent -mx-6 -mb-6 p-6 pt-12">
+                    <h2 id="card-nome" class="font-extrabold text-2xl uppercase tracking-tight text-white truncate drop-shadow-md">Seu Nome Aqui</h2>
+                    <p class="text-xs text-emerald-400 font-medium tracking-wide mt-1">1º CORRE PARÓQUIA 2026</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-left border-t border-zinc-800 pt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Seu Nome</label>
+                    <input 
+                        type="text" 
+                        id="input-nome"
+                        placeholder="Digite o seu nome completo" 
+                        className="w-full"
+                        class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Sua Foto</label>
+                    <input 
+                        type="file" 
+                        id="input-foto"
+                        accept="image/*"
+                        class="w-full text-xs text-zinc-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 file:cursor-pointer file:transition"
+                    />
+                </div>
+
+                <button 
+                    id="btn-download"
+                    class="w-full bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 active:scale-[0.98]"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Baixar Meu Card</span>
+                </button>
+            </div>
+        </div>
+
+        <p class="text-xs text-zinc-600">
+            Partilhe nos stories com a hashtag <span class="text-emerald-500/80 font-semibold">#EuVou</span>
+        </p>
+    </div>
+
+    <script>
+        const inputNome = document.getElementById('input-nome');
+        const cardNome = document.getElementById('card-nome');
+        const inputFoto = document.getElementById('input-foto');
+        const cardEvento = document.getElementById('card-evento');
+        const fotoPlaceholder = document.getElementById('foto-placeholder');
+        const btnDownload = document.getElementById('btn-download');
+
+        // Atualizar o nome em tempo real
+        inputNome.addEventListener('input', (e) => {
+            cardNome.textContent = e.target.value.trim() || 'Seu Nome Aqui';
+        });
+
+        // Atualizar a foto de fundo do card
+        inputFoto.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    cardEvento.style.backgroundImage = `url('${event.target.result}')`;
+                    fotoPlaceholder.style.display = 'none'; // Esconde o texto de aviso
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Função para gerar a imagem e fazer o download
+        btnDownload.addEventListener('click', () => {
+            // Garante uma boa resolução ignorando ligeiramente o scroll do ecrã
+            html2canvas(cardEvento, {
+                useCORS: true,
+                scale: 2,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `card-corre-paroquia-${cardNome.textContent.toLowerCase().replace(/\s+/g, '-')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
