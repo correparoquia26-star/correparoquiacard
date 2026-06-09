@@ -4,8 +4,6 @@ const userFotoBg = document.getElementById("user-foto-bg");
 const wrapperFoto = document.getElementById("wrapper-foto");
 
 const sliderZoom = document.getElementById("slider-zoom");
-const sliderX = document.getElementById("slider-x");
-const sliderY = document.getElementById("slider-y");
 
 const btnReset = document.getElementById("btn-reset");
 const btnDownload = document.getElementById("btn-download");
@@ -19,8 +17,11 @@ let translateY = 0;
 
 function aplicarTransformacoes() {
 
-    const limiteX = wrapperFoto.clientWidth * 0.25;
-    const limiteY = wrapperFoto.clientHeight * 0.25;
+    const limiteX =
+        wrapperFoto.clientWidth * 0.4;
+
+    const limiteY =
+        wrapperFoto.clientHeight * 0.4;
 
     translateX = Math.max(
         -limiteX,
@@ -33,10 +34,12 @@ function aplicarTransformacoes() {
     );
 
     userFoto.style.transform =
-        `translate(${translateX}px, ${translateY}px)`;
+        `translate(${translateX}px, ${translateY}px)
+         scale(${scale})`;
 
     userFotoBg.style.transform =
-        `translate(${translateX}px, ${translateY}px)`;
+        `translate(${translateX}px, ${translateY}px)
+         scale(${scale * 1.4})`;
 }
 
 nomeInput.addEventListener("input", () => {
@@ -67,16 +70,6 @@ sliderZoom.addEventListener("input", e => {
     aplicarTransformacoes();
 });
 
-sliderX.addEventListener("input", e => {
-    translateX = Number(e.target.value);
-    aplicarTransformacoes();
-});
-
-sliderY.addEventListener("input", e => {
-    translateY = Number(e.target.value);
-    aplicarTransformacoes();
-});
-
 btnReset.addEventListener("click", () => {
 
     scale = 1;
@@ -84,8 +77,6 @@ btnReset.addEventListener("click", () => {
     translateY = 0;
 
     sliderZoom.value = 100;
-    sliderX.value = 0;
-    sliderY.value = 0;
 
     aplicarTransformacoes();
 });
@@ -94,39 +85,39 @@ let dragging = false;
 let startX = 0;
 let startY = 0;
 
-wrapperFoto.addEventListener("pointerdown", e => {
+wrapperFoto.addEventListener(
+    "pointerdown",
+    (e) => {
 
-    dragging = true;
+        dragging = true;
 
-    startX = e.clientX;
-    startY = e.clientY;
-});
+        startX = e.clientX;
+        startY = e.clientY;
+    }
+);
 
-window.addEventListener("pointermove", e => {
+window.addEventListener(
+    "pointermove",
+    (e) => {
 
-    if(!dragging) return;
+        if (!dragging) return;
 
-    translateX += e.clientX - startX;
-    translateY += e.clientY - startY;
+        translateX += e.clientX - startX;
+        translateY += e.clientY - startY;
 
-    startX = e.clientX;
-    startY = e.clientY;
+        startX = e.clientX;
+        startY = e.clientY;
 
-    aplicarTransformacoes();
-});
+        aplicarTransformacoes();
+    }
+);
 
-window.addEventListener("pointermove", e => {
-
-    if(!dragging) return;
-
-    translateX += (e.clientX - startX);
-    translateY += (e.clientY - startY);
-
-    startX = e.clientX;
-    startY = e.clientY;
-
-    aplicarTransformacoes();
-});
+window.addEventListener(
+    "pointerup",
+    () => {
+        dragging = false;
+    }
+);
 
 btnDownload.addEventListener("click", async () => {
 
