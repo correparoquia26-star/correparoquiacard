@@ -49,7 +49,7 @@
                     <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">2. Ajuste a posição da sua foto sobre o fundo</p>
                     <div class="flex items-center space-x-3">
                         <span class="text-xs text-zinc-500 w-16">Zoom:</span>
-                        <input type="range" id="slider-zoom" min="50" max="300" value="100" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="slider-zoom" min="100" max="300" value="100" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="text-xs text-zinc-500 w-16">Lado/Lado:</span>
@@ -88,50 +88,37 @@
             const containerW = wrapperFoto.clientWidth;
             const containerH = wrapperFoto.clientHeight;
 
-            // Define o tamanho base para o cálculo de colisão, mas não força o preenchimento (contain)
             const ratioImg = userFoto.naturalWidth / userFoto.naturalHeight;
             const ratioCont = containerW / containerH;
 
             let baseW, baseH;
+            // Força o comportamento 'cover': preenche completamente a menor dimensão para não sobrar fundo
             if (ratioImg > ratioCont) {
-                // Imagem mais larga que o container - baseada na largura
-                baseW = containerW;
-                baseH = containerW / ratioImg;
-            } else {
-                // Imagem mais alta ou igual ao container - baseada na altura
                 baseH = containerH;
                 baseW = containerH * ratioImg;
+            } else {
+                baseW = containerW;
+                baseH = containerW / ratioImg;
             }
 
-            // O tamanho renderizado final da imagem aplicando o Zoom atual do slider
             const renderW = baseW * scale;
             const renderH = baseH * scale;
 
-            // Calcula a folga real das bordas para travar o arrasto (apenas quando a imagem for maior que o contêiner)
+            // Define os limites máximos permitidos baseados no tamanho real renderizado
             const limitX = Math.max(0, (renderW - containerW) / 2);
             const limitY = Math.max(0, (renderH - containerH) / 2);
 
-            // Corrige e impede translação além do limite físico da imagem (apenas quando houver imagem para cortar)
-            if (scale > 1.0) {
-                if (translateX > limitX) translateX = limitX;
-                if (translateX < -limitX) translateX = -limitX;
-                if (translateY > limitY) translateY = limitY;
-                if (translateY < -limitY) translateY = -limitY;
+            // Trava as coordenadas para impedir que frestas vazias apareçam
+            if (translateX > limitX) translateX = limitX;
+            if (translateX < -limitX) translateX = -limitX;
+            if (translateY > limitY) translateY = limitY;
+            if (translateY < -limitY) translateY = -limitY;
 
-                // Ajusta os limites dos controles deslizantes em tempo real
-                sliderX.min = -Math.round(limitX);
-                sliderX.max = Math.round(limitX);
-                sliderY.min = -Math.round(limitY);
-                sliderY.max = Math.round(limitY);
-            } else {
-                // Se o zoom for <= 100%, zera os limites e a posição para evitar bugs visuais
-                sliderX.min = -50; // valor arbitrário pequeno para dar feedback tátil
-                sliderX.max = 50;
-                sliderY.min = -50;
-                sliderY.max = 50;
-                // translateX = 0; //opcional: resetar posição central
-                // translateY = 0;
-            }
+            // Atualiza dinamicamente o curso dos sliders com os limites reais de movimento
+            sliderX.min = -Math.round(limitX);
+            sliderX.max = Math.round(limitX);
+            sliderY.min = -Math.round(limitY);
+            sliderY.max = Math.round(limitY);
 
             userFoto.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
         }
@@ -144,16 +131,15 @@
                     userFoto.src = event.target.result;
                     userFoto.classList.remove('hidden');
                     
-                    // Altera a estratégia inicial para conter e centralizar sem zoom/corte
+                    // Reseta os estilos fixos para deixar o motor de cálculo trabalhar livremente
                     userFoto.style.width = "auto";
                     userFoto.style.height = "auto";
-                    userFoto.style.maxWidth = "100%";
-                    userFoto.style.maxHeight = "100%";
+                    userFoto.style.maxWidth = "none";
+                    userFoto.style.maxHeight = "none";
                     
                     document.getElementById('foto-placeholder').style.display = 'none';
                     painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
                     
-                    // Inicializa os controles no padrão (escala original contida)
                     scale = 1.0; translateX = 0; translateY = 0;
                     sliderZoom.value = 100; sliderX.value = 0; sliderY.value = 0;
                     
