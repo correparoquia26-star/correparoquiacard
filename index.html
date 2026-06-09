@@ -89,36 +89,29 @@
             const containerW = wrapperFoto.clientWidth;
             const containerH = wrapperFoto.clientHeight;
 
-            // Define o tamanho base usando a lógica nativa de preenchimento proporcional (cover)
             const ratioImg = userFoto.naturalWidth / userFoto.naturalHeight;
             const ratioCont = containerW / containerH;
 
             let baseW, baseH;
             if (ratioImg > ratioCont) {
-                // Imagem mais larga que o container (widescreen)
                 baseH = containerH;
                 baseW = containerH * ratioImg;
             } else {
-                // Imagem mais alta que o container (retrato/vertical)
                 baseW = containerW;
                 baseH = containerW / ratioImg;
             }
 
-            // O tamanho final considera a escala multiplicada sobre a base correta
             const renderW = baseW * scale;
             const renderH = baseH * scale;
 
-            // Calcula a folga real das bordas para travar o arrasto
             const limitX = Math.max(0, (renderW - containerW) / 2);
             const limitY = Math.max(0, (renderH - containerH) / 2);
 
-            // Corrige e impede translação além do limite físico da imagem
             if (translateX > limitX) translateX = limitX;
             if (translateX < -limitX) translateX = -limitX;
             if (translateY > limitY) translateY = limitY;
             if (translateY < -limitY) translateY = -limitY;
 
-            // Ajusta os limites dos controles deslizantes em tempo real
             sliderX.min = -Math.round(limitX);
             sliderX.max = Math.round(limitX);
             sliderY.min = -Math.round(limitY);
@@ -135,7 +128,6 @@
                     userFoto.src = event.target.result;
                     userFoto.classList.remove('hidden');
                     
-                    // Modificação crucial: remove tamanhos rígidos de CSS que quebravam o cálculo
                     userFoto.style.width = "auto";
                     userFoto.style.height = "auto";
                     
@@ -146,7 +138,6 @@
                     sliderZoom.value = 100; sliderX.value = 0; sliderY.value = 0;
                     
                     userFoto.onload = function() {
-                        // Força a execução dos limites assim que a imagem for interpretada
                         aplicarTransformacoes();
                     }
                 };
