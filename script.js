@@ -19,11 +19,24 @@ let translateY = 0;
 
 function aplicarTransformacoes() {
 
+    const limiteX = wrapperFoto.clientWidth * 0.25;
+    const limiteY = wrapperFoto.clientHeight * 0.25;
+
+    translateX = Math.max(
+        -limiteX,
+        Math.min(limiteX, translateX)
+    );
+
+    translateY = Math.max(
+        -limiteY,
+        Math.min(limiteY, translateY)
+    );
+
     userFoto.style.transform =
-        `translate(${translateX}px,${translateY}px) scale(${scale})`;
+        `translate(${translateX}px, ${translateY}px)`;
 
     userFotoBg.style.transform =
-        `translate(${translateX}px,${translateY}px) scale(${scale*1.4})`;
+        `translate(${translateX}px, ${translateY}px)`;
 }
 
 nomeInput.addEventListener("input", () => {
@@ -102,8 +115,17 @@ window.addEventListener("pointermove", e => {
     aplicarTransformacoes();
 });
 
-window.addEventListener("pointerup", () => {
-    dragging = false;
+window.addEventListener("pointermove", e => {
+
+    if(!dragging) return;
+
+    translateX += (e.clientX - startX);
+    translateY += (e.clientY - startY);
+
+    startX = e.clientX;
+    startY = e.clientY;
+
+    aplicarTransformacoes();
 });
 
 btnDownload.addEventListener("click", async () => {
