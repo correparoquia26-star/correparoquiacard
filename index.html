@@ -72,7 +72,6 @@
         const inputFoto = document.getElementById('input-foto');
         const userFoto = document.getElementById('user-foto');
         const wrapperFoto = document.getElementById('wrapper-foto');
-        const fotoPlaceholder = document.getElementById('foto-placeholder');
         const cardEvento = document.getElementById('card-evento');
         const btnDownload = document.getElementById('btn-download');
         const painelAjustes = document.getElementById('painel-ajustes');
@@ -108,6 +107,7 @@
             const limitY = Math.max(0, (renderH - containerH) / 2);
 
             if (translateX > limitX) translateX = limitX;
+            if (translateX < -limitX) borderLimitX = -limitX;
             if (translateX < -limitX) translateX = -limitX;
             if (translateY > limitY) translateY = limitY;
             if (translateY < -limitY) translateY = -limitY;
@@ -131,7 +131,7 @@
                     userFoto.style.width = "auto";
                     userFoto.style.height = "auto";
                     
-                    fotoPlaceholder.style.display = 'none';
+                    document.getElementById('foto-placeholder').style.display = 'none';
                     painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
                     
                     scale = 1.0; translateX = 0; translateY = 0;
@@ -145,18 +145,9 @@
             }
         });
 
-        sliderZoom.addEventListener('input', (e) => { 
-            scale = e.target.value / 100; 
-            aplicarTransformacoes(); 
-        });
-        sliderX.addEventListener('input', (e) => { 
-            translateX = parseFloat(e.target.value); 
-            aplicarTransformacoes(); 
-        });
-        sliderY.addEventListener('input', (e) => { 
-            translateY = parseFloat(e.target.value); 
-            aplicarTransformacoes(); 
-        });
+        sliderZoom.addEventListener('input', (e) => { scale = e.target.value / 100; aplicarTransformacoes(); });
+        sliderX.addEventListener('input', (e) => { translateX = parseFloat(e.target.value); aplicarTransformacoes(); });
+        sliderY.addEventListener('input', (e) => { translateY = parseFloat(e.target.value); aplicarTransformacoes(); });
 
         btnDownload.addEventListener('click', () => {
             if(userFoto.src === "" || userFoto.classList.contains('hidden')) {
@@ -164,16 +155,46 @@
                 return;
             }
             btnDownload.innerText = "Processando Imagem...";
-            html2canvas(cardEvento, { useCORS: true, scale: 3, logging: false }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'card-oficial.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                btnDownload.innerText = "Salvar Card no Telefone";
-            }).catch(err => {
-                alert("Erro ao gerar imagem.");
-                btnDownload.innerText = "Salvar Card no Telefone";
-            });
+
+            // Carrega a imagem de fundo em memória para obter as dimensões originais dela (sem perdas)
+            const imgFundoOriginal = new Image();
+            imgFundoOriginal.src = 'fundo.png';
+            
+            imgFundoOriginal.onload = function() {
+                // Obtém a largura nativa do seu arquivo fundo.png (geralmente 1080px ou mais)
+                const larguraOriginal = imgFundoOriginal.naturalWidth || 1080;
+                const larguraAtualCSS = cardEvento.clientWidth;
+                
+                // Calcula o multiplicador exato necessário para o canvas atingir o tamanho real do arquivo original
+                const escalaNativa = larguraOriginal / larguraAtualCSS;
+
+                html2canvas(cardEvento, {
+                    useCORS: true,
+                    scale: escalaNativa, // Usa o multiplicador perfeito para a resolução do arquivo original
+                    logging: false,
+                    backgroundColor: null
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'card-oficial.png';
+                    link.href = canvas.toDataURL('image/png', 1.0); // Qualidade máxima sem compressão
+                    link.click();
+                    btnDownload.innerText = "Salvar Card no Telefone";
+                }).catch(err => {
+                    alert("Erro ao gerar imagem.");
+                    btnDownload.innerText = "Salvar Card no Telefone";
+                });
+            };
+
+            imgFundoOriginal.onerror = function() {
+                // Fallback de segurança caso a imagem demore para responder
+                html2canvas(cardEvento, { useCORS: true, scale: 3, logging: false }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'card-oficial.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    btnDownload.innerText = "Salvar Card no Telefone";
+                });
+            };
         });
     </script>
 </body>
