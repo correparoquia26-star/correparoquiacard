@@ -26,7 +26,7 @@
                 
                 <div id="wrapper-foto" class="absolute top-[36.5%] left-1/2 -translate-x-1/2 w-[64%] h-[41%] z-10 overflow-hidden bg-transparent flex items-center justify-center">
                     
-                    <img id="user-foto-bg" src="" alt="" class="hidden absolute inset-0 w-full h-full object-cover filter blur-md scale-110 opacity-50 pointer-events-none z-0" />
+                    <img id="user-foto-bg" src="" alt="" class="hidden absolute w-full h-full object-cover filter blur-lg opacity-60 pointer-events-none z-0 origin-center transition-none" />
                     
                     <img id="user-foto" src="" alt="" class="hidden max-w-full max-h-full object-contain origin-center pointer-events-none transition-none z-10" />
                     
@@ -88,11 +88,10 @@
         function aplicarTransformacoes() {
             if (!userFoto.complete || userFoto.src === "") return;
 
-            // Como a foto principal usa contain, permitimos um arrasto confortável e dinâmico baseado no tamanho da janela
             const containerW = wrapperFoto.clientWidth;
             const containerH = wrapperFoto.clientHeight;
 
-            // Dá flexibilidade aos controles baseado no zoom escolhido pelo usuário
+            // Define o limite dinâmico para os controles deslizantes
             const rangeX = Math.round(containerW * scale * 0.6);
             const rangeY = Math.round(containerH * scale * 0.6);
 
@@ -101,7 +100,12 @@
             sliderY.min = -rangeY;
             sliderY.max = rangeY;
 
+            // Aplica as transformações na foto nítida frontal
             userFoto.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+            // Sincroniza a camada borrada de fundo: ela se move na mesma direção e ganha um multiplicador de tamanho extra (1.4x) para garantir que cobrirá todo e qualquer espaço preto nas bordas
+            const bgScale = scale * 1.4;
+            userFotoBg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${bgScale})`;
         }
 
         inputFoto.addEventListener('change', (e) => {
@@ -110,7 +114,7 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     userFoto.src = event.target.result;
-                    userFotoBg.src = event.target.result; // Clona a imagem no fundo desfocado
+                    userFotoBg.src = event.target.result;
                     
                     userFoto.classList.remove('hidden');
                     userFotoBg.classList.remove('hidden');
