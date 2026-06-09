@@ -72,6 +72,7 @@
         const inputFoto = document.getElementById('input-foto');
         const userFoto = document.getElementById('user-foto');
         const wrapperFoto = document.getElementById('wrapper-foto');
+        const fotoPlaceholder = document.getElementById('foto-placeholder');
         const cardEvento = document.getElementById('card-evento');
         const btnDownload = document.getElementById('btn-download');
         const painelAjustes = document.getElementById('painel-ajustes');
@@ -88,29 +89,36 @@
             const containerW = wrapperFoto.clientWidth;
             const containerH = wrapperFoto.clientHeight;
 
+            // Define o tamanho base usando a lógica nativa de preenchimento proporcional (cover)
             const ratioImg = userFoto.naturalWidth / userFoto.naturalHeight;
             const ratioCont = containerW / containerH;
 
             let baseW, baseH;
             if (ratioImg > ratioCont) {
+                // Imagem mais larga que o container (widescreen)
                 baseH = containerH;
                 baseW = containerH * ratioImg;
             } else {
+                // Imagem mais alta que o container (retrato/vertical)
                 baseW = containerW;
                 baseH = containerW / ratioImg;
             }
 
+            // O tamanho final considera a escala multiplicada sobre a base correta
             const renderW = baseW * scale;
             const renderH = baseH * scale;
 
+            // Calcula a folga real das bordas para travar o arrasto
             const limitX = Math.max(0, (renderW - containerW) / 2);
             const limitY = Math.max(0, (renderH - containerH) / 2);
 
+            // Corrige e impede translação além do limite físico da imagem
             if (translateX > limitX) translateX = limitX;
             if (translateX < -limitX) translateX = -limitX;
             if (translateY > limitY) translateY = limitY;
             if (translateY < -limitY) translateY = -limitY;
 
+            // Ajusta os limites dos controles deslizantes em tempo real
             sliderX.min = -Math.round(limitX);
             sliderX.max = Math.round(limitX);
             sliderY.min = -Math.round(limitY);
@@ -127,16 +135,18 @@
                     userFoto.src = event.target.result;
                     userFoto.classList.remove('hidden');
                     
+                    // Modificação crucial: remove tamanhos rígidos de CSS que quebravam o cálculo
                     userFoto.style.width = "auto";
                     userFoto.style.height = "auto";
                     
-                    document.getElementById('foto-placeholder').style.display = 'none';
+                    fotoPlaceholder.style.display = 'none';
                     painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
                     
                     scale = 1.0; translateX = 0; translateY = 0;
                     sliderZoom.value = 100; sliderX.value = 0; sliderY.value = 0;
                     
                     userFoto.onload = function() {
+                        // Força a execução dos limites assim que a imagem for interpretada
                         aplicarTransformacoes();
                     }
                 };
@@ -144,9 +154,18 @@
             }
         });
 
-        sliderZoom.addEventListener('input', (e) => { scale = e.target.value / 100; aplicarTransformacoes(); });
-        sliderX.addEventListener('input', (e) => { translateX = parseFloat(e.target.value); aplicarTransformacoes(); });
-        sliderY.addEventListener('input', (e) => { translateY = parseFloat(e.target.value); aplicarTransformacoes(); });
+        sliderZoom.addEventListener('input', (e) => { 
+            scale = e.target.value / 100; 
+            aplicarTransformacoes(); 
+        });
+        sliderX.addEventListener('input', (e) => { 
+            translateX = parseFloat(e.target.value); 
+            aplicarTransformacoes(); 
+        });
+        sliderY.addEventListener('input', (e) => { 
+            translateY = parseFloat(e.target.value); 
+            aplicarTransformacoes(); 
+        });
 
         btnDownload.addEventListener('click', () => {
             if(userFoto.src === "" || userFoto.classList.contains('hidden')) {
@@ -154,23 +173,10 @@
                 return;
             }
             btnDownload.innerText = "Processando Imagem...";
-
-            // Configurações avançadas para download em altíssima qualidade (HD)
-            const opcoesConf = {
-                useCORS: true,
-                scale: 4, // Aumenta a densidade de pixels final
-                logging: false,
-                allowTaint: true,
-                backgroundColor: null,
-                windowWidth: cardEvento.scrollWidth,
-                windowHeight: cardEvento.scrollHeight
-            };
-
-            html2canvas(cardEvento, opcoesConf).then(canvas => {
+            html2canvas(cardEvento, { useCORS: true, scale: 3, logging: false }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'card-oficial.png';
-                // Garante a exportação no formato PNG com compressão sem perdas
-                link.href = canvas.toDataURL('image/png', 1.0);
+                link.href = canvas.toDataURL('image/png');
                 link.click();
                 btnDownload.innerText = "Salvar Card no Telefone";
             }).catch(err => {
