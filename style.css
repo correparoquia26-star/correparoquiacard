@@ -72,6 +72,7 @@ header p{
     align-items:center;
 
     touch-action:none;
+    cursor:grab;
 }
 
 #user-foto-bg{
@@ -165,4 +166,7 @@ button{
 
 #btn-download:hover{
     background:#059669;
+}
+#wrapper-foto:active{
+    cursor:grabbing;
 }
