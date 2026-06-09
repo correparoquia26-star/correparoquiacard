@@ -49,7 +49,7 @@
                     <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">2. Ajuste a posição da sua foto sobre o fundo</p>
                     <div class="flex items-center space-x-3">
                         <span class="text-xs text-zinc-500 w-16">Zoom:</span>
-                        <input type="range" id="slider-zoom" min="100" max="300" value="100" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="slider-zoom" min="50" max="300" value="100" class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer">
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="text-xs text-zinc-500 w-16">Lado/Lado:</span>
@@ -88,34 +88,50 @@
             const containerW = wrapperFoto.clientWidth;
             const containerH = wrapperFoto.clientHeight;
 
+            // Define o tamanho base para o cálculo de colisão, mas não força o preenchimento (contain)
             const ratioImg = userFoto.naturalWidth / userFoto.naturalHeight;
             const ratioCont = containerW / containerH;
 
             let baseW, baseH;
             if (ratioImg > ratioCont) {
-                baseH = containerH;
-                baseW = containerH * ratioImg;
-            } else {
+                // Imagem mais larga que o container - baseada na largura
                 baseW = containerW;
                 baseH = containerW / ratioImg;
+            } else {
+                // Imagem mais alta ou igual ao container - baseada na altura
+                baseH = containerH;
+                baseW = containerH * ratioImg;
             }
 
+            // O tamanho renderizado final da imagem aplicando o Zoom atual do slider
             const renderW = baseW * scale;
             const renderH = baseH * scale;
 
+            // Calcula a folga real das bordas para travar o arrasto (apenas quando a imagem for maior que o contêiner)
             const limitX = Math.max(0, (renderW - containerW) / 2);
             const limitY = Math.max(0, (renderH - containerH) / 2);
 
-            if (translateX > limitX) translateX = limitX;
-            if (translateX < -limitX) borderLimitX = -limitX;
-            if (translateX < -limitX) translateX = -limitX;
-            if (translateY > limitY) translateY = limitY;
-            if (translateY < -limitY) translateY = -limitY;
+            // Corrige e impede translação além do limite físico da imagem (apenas quando houver imagem para cortar)
+            if (scale > 1.0) {
+                if (translateX > limitX) translateX = limitX;
+                if (translateX < -limitX) translateX = -limitX;
+                if (translateY > limitY) translateY = limitY;
+                if (translateY < -limitY) translateY = -limitY;
 
-            sliderX.min = -Math.round(limitX);
-            sliderX.max = Math.round(limitX);
-            sliderY.min = -Math.round(limitY);
-            sliderY.max = Math.round(limitY);
+                // Ajusta os limites dos controles deslizantes em tempo real
+                sliderX.min = -Math.round(limitX);
+                sliderX.max = Math.round(limitX);
+                sliderY.min = -Math.round(limitY);
+                sliderY.max = Math.round(limitY);
+            } else {
+                // Se o zoom for <= 100%, zera os limites e a posição para evitar bugs visuais
+                sliderX.min = -50; // valor arbitrário pequeno para dar feedback tátil
+                sliderX.max = 50;
+                sliderY.min = -50;
+                sliderY.max = 50;
+                // translateX = 0; //opcional: resetar posição central
+                // translateY = 0;
+            }
 
             userFoto.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
         }
@@ -128,12 +144,16 @@
                     userFoto.src = event.target.result;
                     userFoto.classList.remove('hidden');
                     
+                    // Altera a estratégia inicial para conter e centralizar sem zoom/corte
                     userFoto.style.width = "auto";
                     userFoto.style.height = "auto";
+                    userFoto.style.maxWidth = "100%";
+                    userFoto.style.maxHeight = "100%";
                     
                     document.getElementById('foto-placeholder').style.display = 'none';
                     painelAjustes.classList.remove('opacity-40', 'pointer-events-none');
                     
+                    // Inicializa os controles no padrão (escala original contida)
                     scale = 1.0; translateX = 0; translateY = 0;
                     sliderZoom.value = 100; sliderX.value = 0; sliderY.value = 0;
                     
@@ -145,9 +165,18 @@
             }
         });
 
-        sliderZoom.addEventListener('input', (e) => { scale = e.target.value / 100; aplicarTransformacoes(); });
-        sliderX.addEventListener('input', (e) => { translateX = parseFloat(e.target.value); aplicarTransformacoes(); });
-        sliderY.addEventListener('input', (e) => { translateY = parseFloat(e.target.value); aplicarTransformacoes(); });
+        sliderZoom.addEventListener('input', (e) => { 
+            scale = e.target.value / 100; 
+            aplicarTransformacoes(); 
+        });
+        sliderX.addEventListener('input', (e) => { 
+            translateX = parseFloat(e.target.value); 
+            aplicarTransformacoes(); 
+        });
+        sliderY.addEventListener('input', (e) => { 
+            translateY = parseFloat(e.target.value); 
+            aplicarTransformacoes(); 
+        });
 
         btnDownload.addEventListener('click', () => {
             if(userFoto.src === "" || userFoto.classList.contains('hidden')) {
@@ -156,27 +185,23 @@
             }
             btnDownload.innerText = "Processando Imagem...";
 
-            // Carrega a imagem de fundo em memória para obter as dimensões originais dela (sem perdas)
             const imgFundoOriginal = new Image();
             imgFundoOriginal.src = 'fundo.png';
             
             imgFundoOriginal.onload = function() {
-                // Obtém a largura nativa do seu arquivo fundo.png (geralmente 1080px ou mais)
                 const larguraOriginal = imgFundoOriginal.naturalWidth || 1080;
                 const larguraAtualCSS = cardEvento.clientWidth;
-                
-                // Calcula o multiplicador exato necessário para o canvas atingir o tamanho real do arquivo original
                 const escalaNativa = larguraOriginal / larguraAtualCSS;
 
                 html2canvas(cardEvento, {
                     useCORS: true,
-                    scale: escalaNativa, // Usa o multiplicador perfeito para a resolução do arquivo original
+                    scale: escalaNativa,
                     logging: false,
                     backgroundColor: null
                 }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = 'card-oficial.png';
-                    link.href = canvas.toDataURL('image/png', 1.0); // Qualidade máxima sem compressão
+                    link.href = canvas.toDataURL('image/png', 1.0);
                     link.click();
                     btnDownload.innerText = "Salvar Card no Telefone";
                 }).catch(err => {
@@ -186,7 +211,6 @@
             };
 
             imgFundoOriginal.onerror = function() {
-                // Fallback de segurança caso a imagem demore para responder
                 html2canvas(cardEvento, { useCORS: true, scale: 3, logging: false }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = 'card-oficial.png';
