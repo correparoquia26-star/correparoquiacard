@@ -7,21 +7,18 @@
 body{
     color:white;
     min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
     padding:20px;
     font-family:Arial,sans-serif;
     overflow-x:hidden;
     background:
         radial-gradient(circle at top, rgba(96,165,250,.18), transparent 35%),
-        radial-gradient(circle at center, rgba(59,130,246,.12), transparent 55%),
         linear-gradient(180deg,#020817 0%,#0f172a 45%,#1e3a8a 100%);
 }
 
 .container{
     width:100%;
     max-width:500px;
+    margin:0 auto;
 }
 
 header{
@@ -33,7 +30,6 @@ header h1{
     font-size:2rem;
     font-weight:900;
     margin-bottom:10px;
-    color:#f8fafc;
 }
 
 header p{
@@ -41,12 +37,15 @@ header p{
 }
 
 .card-box{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
     background:rgba(15,23,42,.82);
     border:1px solid rgba(96,165,250,.28);
     border-radius:24px;
     padding:20px;
     box-shadow:0 0 35px rgba(37,99,235,.25);
-    backdrop-filter:blur(12px);
 }
 
 #card-evento{
@@ -56,29 +55,35 @@ header p{
     overflow:hidden;
     border-radius:18px;
     background:#020817;
-    margin-bottom:20px;
     border:1px solid rgba(96,165,250,.35);
-    box-shadow:0 0 25px rgba(59,130,246,.25);
 }
 
-/* FOTO FICA ATRÁS DA MOLDURA, MAS VISÍVEL */
-#wrapper-foto{
+/* FUNDO / MOLDURA */
+#moldura-bg{
     position:absolute;
     inset:0;
-    width:100%;
-    height:100%;
+    background-image:url("fundo.png");
+    background-size:cover;
+    background-position:center;
+    z-index:1;
+    pointer-events:none;
+}
+
+/* FOTO POR CIMA DO FUNDO */
+#wrapper-foto{
+    position:absolute;
+    top:36.5%;
+    left:50%;
+    transform:translateX(-50%);
+    width:64%;
+    height:41%;
     overflow:hidden;
     display:flex;
     justify-content:center;
     align-items:center;
+    z-index:5;
     touch-action:none;
     cursor:grab;
-    z-index:1;
-    background:#020817;
-}
-
-#wrapper-foto:active{
-    cursor:grabbing;
 }
 
 #user-foto-bg{
@@ -87,7 +92,7 @@ header p{
     width:100%;
     height:100%;
     object-fit:cover;
-    filter:blur(25px);
+    filter:blur(20px);
     opacity:.55;
     display:none;
     z-index:1;
@@ -103,39 +108,21 @@ header p{
     z-index:2;
 }
 
-/* MOLDURA / FUNDO DO CARD */
-#moldura-bg{
-    position:absolute;
-    inset:0;
-    background-image:url("fundo.png");
-    background-size:cover;
-    background-position:center;
-    z-index:5;
-    pointer-events:none;
-}
-
-/* PLACEHOLDER ACIMA DA FOTO E ABAIXO DA MOLDURA */
 #foto-placeholder{
     position:absolute;
-    top:36.5%;
-    left:50%;
-    transform:translateX(-50%);
-    width:64%;
-    height:41%;
+    inset:0;
     display:flex;
-    justify-content:center;
     align-items:center;
-    background:rgba(2,8,23,.78);
-    border:1px solid rgba(96,165,250,.35);
-    color:#bfdbfe;
-    padding:15px;
-    border-radius:14px;
-    font-size:.9rem;
+    justify-content:center;
     text-align:center;
-    z-index:6;
+    background:rgba(2,8,23,.65);
+    color:#dbeafe;
+    font-size:1rem;
+    padding:15px;
+    z-index:3;
 }
 
-/* TEXTO SEM DUPLICAÇÃO E SEM FALHAS */
+/* NOME */
 #texto-nome{
     position:absolute;
     top:65.5%;
@@ -143,30 +130,25 @@ header p{
     transform:translateX(-50%);
     width:85%;
     text-align:center;
-
     font-size:clamp(22px, 6vw, 34px);
     font-weight:900;
-    letter-spacing:.4px;
     line-height:1.05;
-
-    color:#ffffff;
-    z-index:20;
-
-    -webkit-text-stroke:0;
-    paint-order:stroke fill;
+    color:white;
+    z-index:10;
 
     text-shadow:
         2px 0 0 #06163d,
         -2px 0 0 #06163d,
         0 2px 0 #06163d,
         0 -2px 0 #06163d,
-        1.5px 1.5px 0 #06163d,
-        -1.5px 1.5px 0 #06163d,
-        1.5px -1.5px 0 #06163d,
-        -1.5px -1.5px 0 #06163d;
+        1px 1px 0 #06163d,
+        -1px 1px 0 #06163d,
+        1px -1px 0 #06163d,
+        -1px -1px 0 #06163d;
 }
 
 .controls{
+    width:100%;
     display:flex;
     flex-direction:column;
     gap:15px;
@@ -177,7 +159,6 @@ input[type="text"]{
     padding:13px;
     border:1px solid rgba(96,165,250,.3);
     border-radius:14px;
-    margin-bottom:15px;
     background:rgba(15,23,42,.9);
     color:white;
     outline:none;
@@ -189,7 +170,6 @@ input[type="text"]::placeholder{
 
 input[type="file"]{
     width:100%;
-    margin-top:8px;
     color:#cbd5e1;
 }
 
@@ -199,12 +179,12 @@ input[type="range"]{
 }
 
 button{
+    width:100%;
     border:none;
     border-radius:999px;
     padding:15px;
     cursor:pointer;
     font-weight:900;
-    transition:.25s;
 }
 
 #btn-reset{
@@ -216,10 +196,4 @@ button{
 #btn-download{
     background:linear-gradient(135deg,#60a5fa,#2563eb);
     color:white;
-    box-shadow:0 0 22px rgba(37,99,235,.55);
-}
-
-#btn-download:hover{
-    transform:translateY(-2px);
-    box-shadow:0 0 30px rgba(37,99,235,.75);
 }
