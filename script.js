@@ -94,10 +94,13 @@ btnDownload.addEventListener("click", async () => {
     const card = document.getElementById("card-evento");
 
     const canvas = await html2canvas(card, {
-        scale:4,
-        useCORS:true,
-        backgroundColor:null
-    });
+    scale:3,
+    useCORS:true,
+    allowTaint:true,
+    backgroundColor:"#020817",
+    scrollX:0,
+    scrollY:0
+});
 
     canvas.toBlob(async blob => {
         const file = new File([blob], "card-oficial.png", {
