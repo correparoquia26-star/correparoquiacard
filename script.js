@@ -16,7 +16,7 @@ let posY = 0;
 
 function atualizarFoto(){
     fotoUser.style.transform =
-        `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px)) scale(${scale})`;
+        `translate(-50%, -50%) translate(${posX}px, ${posY}px) scale(${scale})`;
 }
 
 nomeInput.addEventListener("input", () => {
