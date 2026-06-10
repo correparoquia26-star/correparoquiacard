@@ -129,28 +129,25 @@ header p{
     top:65.5%;
     left:50%;
     transform:translateX(-50%);
-
     width:85%;
 
     text-align:center;
-
-    font-size:1.7rem;
+    font-size:1.45rem;
     font-weight:900;
-    letter-spacing:1px;
+    letter-spacing:.5px;
 
     color:#ffffff;
-
     z-index:20;
 
-    -webkit-text-stroke: 4px #0f172a;
+    -webkit-text-stroke: 1px #06163d;
 
     text-shadow:
-        0 0 3px #0f172a,
-        0 0 8px #1d4ed8,
-        0 0 18px #2563eb,
-        0 0 30px rgba(37,99,235,.8);
+        1px 1px 0 #06163d,
+        -1px 1px 0 #06163d,
+        1px -1px 0 #06163d,
+        -1px -1px 0 #06163d,
+        0 0 8px rgba(37,99,235,.6);
 }
-
 .controls{
     display:flex;
     flex-direction:column;
