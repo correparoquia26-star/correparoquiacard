@@ -13,7 +13,6 @@ body{
     padding:20px;
     font-family:Arial,sans-serif;
     overflow-x:hidden;
-
     background:
         radial-gradient(circle at top, rgba(96,165,250,.18), transparent 35%),
         radial-gradient(circle at center, rgba(59,130,246,.12), transparent 55%),
@@ -62,23 +61,12 @@ header p{
     box-shadow:0 0 25px rgba(59,130,246,.25);
 }
 
-#moldura-bg{
-    position:absolute;
-    inset:0;
-    background-image:url("fundo.png");
-    background-size:cover;
-    background-position:center;
-    z-index:5;
-    pointer-events:none;
-}
-
+/* FOTO FICA ATRÁS DA MOLDURA, MAS VISÍVEL */
 #wrapper-foto{
     position:absolute;
-    top:36.5%;
-    left:50%;
-    transform:translateX(-50%);
-    width:64%;
-    height:41%;
+    inset:0;
+    width:100%;
+    height:100%;
     overflow:hidden;
     display:flex;
     justify-content:center;
@@ -95,25 +83,48 @@ header p{
 
 #user-foto-bg{
     position:absolute;
+    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
     filter:blur(25px);
-    opacity:.6;
+    opacity:.55;
     display:none;
-    z-index:0;
+    z-index:1;
 }
 
 #user-foto{
-    max-width:100%;
-    max-height:100%;
-    object-fit:contain;
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
     display:none;
     z-index:2;
-    position:relative;
 }
 
+/* MOLDURA / FUNDO DO CARD */
+#moldura-bg{
+    position:absolute;
+    inset:0;
+    background-image:url("fundo.png");
+    background-size:cover;
+    background-position:center;
+    z-index:5;
+    pointer-events:none;
+}
+
+/* PLACEHOLDER ACIMA DA FOTO E ABAIXO DA MOLDURA */
 #foto-placeholder{
+    position:absolute;
+    top:36.5%;
+    left:50%;
+    transform:translateX(-50%);
+    width:64%;
+    height:41%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
     background:rgba(2,8,23,.78);
     border:1px solid rgba(96,165,250,.35);
     color:#bfdbfe;
@@ -121,33 +132,40 @@ header p{
     border-radius:14px;
     font-size:.9rem;
     text-align:center;
-    z-index:3;
+    z-index:6;
 }
 
+/* TEXTO SEM DUPLICAÇÃO E SEM FALHAS */
 #texto-nome{
     position:absolute;
     top:65.5%;
     left:50%;
     transform:translateX(-50%);
     width:85%;
-
     text-align:center;
-    font-size:1.45rem;
+
+    font-size:clamp(22px, 6vw, 34px);
     font-weight:900;
-    letter-spacing:.5px;
+    letter-spacing:.4px;
+    line-height:1.05;
 
     color:#ffffff;
     z-index:20;
 
-    -webkit-text-stroke: 1px #06163d;
+    -webkit-text-stroke:0;
+    paint-order:stroke fill;
 
     text-shadow:
-        1px 1px 0 #06163d,
-        -1px 1px 0 #06163d,
-        1px -1px 0 #06163d,
-        -1px -1px 0 #06163d,
-        0 0 8px rgba(37,99,235,.6);
+        2px 0 0 #06163d,
+        -2px 0 0 #06163d,
+        0 2px 0 #06163d,
+        0 -2px 0 #06163d,
+        1.5px 1.5px 0 #06163d,
+        -1.5px 1.5px 0 #06163d,
+        1.5px -1.5px 0 #06163d,
+        -1.5px -1.5px 0 #06163d;
 }
+
 .controls{
     display:flex;
     flex-direction:column;
