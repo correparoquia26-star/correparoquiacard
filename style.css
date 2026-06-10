@@ -197,3 +197,50 @@ button{
     background:linear-gradient(135deg,#60a5fa,#2563eb);
     color:white;
 }
+@media (max-width:600px){
+
+    body{
+        display:block;
+        padding:18px 14px 40px;
+        align-items:initial;
+        justify-content:initial;
+    }
+
+    .container{
+        max-width:100%;
+    }
+
+    header h1{
+        font-size:1.6rem;
+        line-height:1.15;
+    }
+
+    header p{
+        font-size:1rem;
+    }
+
+    .card-box{
+        padding:14px;
+        border-radius:20px;
+    }
+
+    #card-evento{
+        width:100%;
+        max-width:330px;
+        margin:0 auto 18px;
+    }
+
+    .controls{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+        width:100%;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    input[type="range"],
+    button{
+        width:100%;
+    }
+}
