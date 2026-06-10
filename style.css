@@ -4,14 +4,20 @@
     box-sizing:border-box;
 }
 
+html, body{
+    width:100%;
+    min-height:100%;
+    overflow-x:hidden;
+}
+
 body{
     color:white;
-    min-height:100vh;
-    padding:20px;
     font-family:Arial,sans-serif;
-    overflow-x:hidden;
+    padding:20px;
+
     background:
         radial-gradient(circle at top, rgba(96,165,250,.18), transparent 35%),
+        radial-gradient(circle at center, rgba(59,130,246,.12), transparent 55%),
         linear-gradient(180deg,#020817 0%,#0f172a 45%,#1e3a8a 100%);
 }
 
@@ -30,6 +36,7 @@ header h1{
     font-size:2rem;
     font-weight:900;
     margin-bottom:10px;
+    color:#f8fafc;
 }
 
 header p{
@@ -38,31 +45,48 @@ header p{
 
 .card-box{
     width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:15px;
     background:rgba(15,23,42,.82);
     border:1px solid rgba(96,165,250,.28);
     border-radius:24px;
     padding:20px;
     box-shadow:0 0 35px rgba(37,99,235,.25);
-    overflow:visible; 
+    backdrop-filter:blur(12px);
+
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
 
+input[type="text"]{
+    width:100%;
+    padding:13px;
+    border:1px solid rgba(96,165,250,.3);
+    border-radius:14px;
+    background:rgba(15,23,42,.9);
+    color:white;
+    outline:none;
+    font-size:1rem;
+}
+
+input[type="text"]::placeholder{
+    color:#93c5fd;
+}
+
+/* CARD */
 #card-evento{
     position:relative;
     width:100%;
-    max-width:320px;
-    height:560px;
+    max-width:360px;
+    aspect-ratio:9/16;
     margin:0 auto;
-
     overflow:hidden;
     border-radius:18px;
     background:#020817;
     border:1px solid rgba(96,165,250,.35);
+    box-shadow:0 0 25px rgba(59,130,246,.25);
 }
 
-/* FUNDO / MOLDURA */
+/* FUNDO */
 #moldura-bg{
     position:absolute;
     inset:0;
@@ -84,29 +108,29 @@ header p{
     height:32%;
 
     overflow:hidden;
-
     display:flex;
     justify-content:center;
     align-items:center;
 
-    z-index:999;
-
+    z-index:5;
     touch-action:none;
     cursor:grab;
+
+    border-radius:18px;
+}
+
+#wrapper-foto:active{
+    cursor:grabbing;
 }
 
 #user-foto-bg{
     position:absolute;
     inset:0;
-
     width:100%;
     height:100%;
-
     object-fit:cover;
-
-    filter:blur(20px);
+    filter:blur(18px);
     opacity:.35;
-
     display:none;
     z-index:1;
 }
@@ -114,16 +138,12 @@ header p{
 #user-foto{
     position:absolute;
     inset:0;
-
     width:100%;
     height:100%;
-
     object-fit:cover;
-
-    border-radius:18px;
-
     display:none;
     z-index:2;
+    border-radius:18px;
 }
 
 #foto-placeholder{
@@ -133,7 +153,7 @@ header p{
     align-items:center;
     justify-content:center;
     text-align:center;
-    background:rgba(2,8,23,.65);
+    background:rgba(2,8,23,.72);
     color:#dbeafe;
     font-size:1rem;
     padding:15px;
@@ -143,15 +163,18 @@ header p{
 /* NOME */
 #texto-nome{
     position:absolute;
-    top:65.5%;
+    top:63%;
     left:50%;
     transform:translateX(-50%);
     width:85%;
+
     text-align:center;
     font-size:clamp(22px, 6vw, 34px);
     font-weight:900;
     line-height:1.05;
-    color:white;
+    letter-spacing:.4px;
+
+    color:#ffffff;
     z-index:10;
 
     text-shadow:
@@ -165,6 +188,7 @@ header p{
         -1px -1px 0 #06163d;
 }
 
+/* CONTROLES */
 .controls{
     width:100%;
     display:flex;
@@ -172,22 +196,14 @@ header p{
     gap:15px;
 }
 
-input[type="text"]{
-    width:100%;
-    padding:13px;
-    border:1px solid rgba(96,165,250,.3);
-    border-radius:14px;
-    background:rgba(15,23,42,.9);
-    color:white;
-    outline:none;
-}
-
-input[type="text"]::placeholder{
-    color:#93c5fd;
+.controls label{
+    color:#f8fafc;
+    font-size:1rem;
 }
 
 input[type="file"]{
     width:100%;
+    margin-top:8px;
     color:#cbd5e1;
 }
 
@@ -203,6 +219,8 @@ button{
     padding:15px;
     cursor:pointer;
     font-weight:900;
+    font-size:1rem;
+    transition:.25s;
 }
 
 #btn-reset{
@@ -214,18 +232,23 @@ button{
 #btn-download{
     background:linear-gradient(135deg,#60a5fa,#2563eb);
     color:white;
+    box-shadow:0 0 22px rgba(37,99,235,.55);
 }
+
+#btn-download:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 30px rgba(37,99,235,.75);
+}
+
+/* CELULAR */
 @media (max-width:600px){
 
     body{
-        display:block;
-        padding:14px 12px 30px;
+        padding:14px 12px 35px;
     }
 
     .container{
-        width:100%;
         max-width:390px;
-        margin:0 auto;
     }
 
     header{
@@ -233,7 +256,7 @@ button{
     }
 
     header h1{
-        font-size:1.5rem;
+        font-size:1.55rem;
         line-height:1.15;
     }
 
@@ -248,37 +271,14 @@ button{
     }
 
     #card-evento{
-        width:100%;
         max-width:280px;
-        margin:0 auto 12px;
-    }
-
-    .controls{
-        display:flex;
-        flex-direction:column;
-        gap:12px;
-    }
-
-    .controls label,
-    #painel-ajustes label{
-        width:100%;
-        display:block;
-        font-size:.95rem;
     }
 
     input[type="text"]{
         padding:12px;
-        font-size:1rem;
-    }
-
-    input[type="file"]{
-        width:100%;
-        font-size:.9rem;
     }
 
     button{
-        width:100%;
         padding:13px;
-        font-size:1rem;
     }
 }
