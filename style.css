@@ -46,12 +46,16 @@ header p{
     border-radius:24px;
     padding:20px;
     box-shadow:0 0 35px rgba(37,99,235,.25);
+    overflow:visible; 
 }
 
 #card-evento{
     position:relative;
     width:100%;
-    aspect-ratio:9/16;
+    max-width:320px;
+    height:560px;
+    margin:0 auto;
+
     overflow:hidden;
     border-radius:18px;
     background:#020817;
@@ -72,12 +76,12 @@ header p{
 /* FOTO POR CIMA DO FUNDO */
 #wrapper-foto{
     position:absolute;
-    top:25%;
+    top:28%;
     left:50%;
     transform:translateX(-50%);
 
-    width:58%;
-    height:42%;
+    width:52%;
+    height:32%;
 
     overflow:hidden;
 
