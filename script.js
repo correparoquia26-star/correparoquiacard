@@ -1,11 +1,9 @@
 const inputFoto = document.getElementById("input-foto");
-const userFoto = document.getElementById("user-foto");
-const userFotoBg = document.getElementById("user-foto-bg");
-const wrapperFoto = document.getElementById("wrapper-foto");
-const fotoPlaceholder = document.getElementById("foto-placeholder");
+const fotoUser = document.getElementById("foto-user");
+const areaFoto = document.getElementById("area-foto");
+const placeholder = document.getElementById("foto-placeholder");
 
 const sliderZoom = document.getElementById("slider-zoom");
-
 const btnReset = document.getElementById("btn-reset");
 const btnDownload = document.getElementById("btn-download");
 
@@ -13,111 +11,100 @@ const nomeInput = document.getElementById("nome-corredor");
 const textoNome = document.getElementById("texto-nome");
 
 let scale = 1;
-let translateX = 0;
-let translateY = 0;
+let posX = 0;
+let posY = 0;
 
-function aplicarTransformacoes(){
-    userFoto.style.transform =
-        `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-
-    userFotoBg.style.transform =
-        `translate(${translateX}px, ${translateY}px) scale(${scale * 1.25})`;
+function atualizarFoto(){
+    fotoUser.style.transform =
+        `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px)) scale(${scale})`;
 }
 
 nomeInput.addEventListener("input", () => {
     textoNome.textContent = nomeInput.value.toUpperCase();
 });
 
-inputFoto.addEventListener("change", e => {
-    const file = e.target.files[0];
+inputFoto.addEventListener("change", function(){
+    const file = this.files[0];
 
     if(!file) return;
 
     const reader = new FileReader();
 
-    reader.onload = function(event){
-        userFoto.src = event.target.result;
-        userFotoBg.src = event.target.result;
-
-        userFoto.style.display = "block";
-        userFotoBg.style.display = "block";
-        fotoPlaceholder.style.display = "none";
+    reader.onload = function(e){
+        fotoUser.src = e.target.result;
+        fotoUser.style.display = "block";
+        placeholder.style.display = "none";
 
         scale = 1;
-        translateX = 0;
-        translateY = 0;
+        posX = 0;
+        posY = 0;
         sliderZoom.value = 100;
 
-        aplicarTransformacoes();
+        atualizarFoto();
     };
 
     reader.readAsDataURL(file);
 });
 
-sliderZoom.addEventListener("input", e => {
-    scale = Number(e.target.value) / 100;
-    aplicarTransformacoes();
+sliderZoom.addEventListener("input", () => {
+    scale = Number(sliderZoom.value) / 100;
+    atualizarFoto();
 });
 
 btnReset.addEventListener("click", () => {
     scale = 1;
-    translateX = 0;
-    translateY = 0;
-
+    posX = 0;
+    posY = 0;
     sliderZoom.value = 100;
 
-    aplicarTransformacoes();
+    atualizarFoto();
 });
 
-let dragging = false;
-let startX = 0;
-let startY = 0;
+let arrastando = false;
+let inicioX = 0;
+let inicioY = 0;
 
-wrapperFoto.addEventListener("pointerdown", e => {
-    dragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-
-    wrapperFoto.setPointerCapture(e.pointerId);
+areaFoto.addEventListener("pointerdown", e => {
+    arrastando = true;
+    inicioX = e.clientX;
+    inicioY = e.clientY;
+    areaFoto.setPointerCapture(e.pointerId);
 });
 
-wrapperFoto.addEventListener("pointermove", e => {
-    if(!dragging) return;
+areaFoto.addEventListener("pointermove", e => {
+    if(!arrastando) return;
 
-    translateX += e.clientX - startX;
-    translateY += e.clientY - startY;
+    posX += e.clientX - inicioX;
+    posY += e.clientY - inicioY;
 
-    startX = e.clientX;
-    startY = e.clientY;
+    inicioX = e.clientX;
+    inicioY = e.clientY;
 
-    aplicarTransformacoes();
+    atualizarFoto();
 });
 
-wrapperFoto.addEventListener("pointerup", e => {
-    dragging = false;
-    wrapperFoto.releasePointerCapture(e.pointerId);
+areaFoto.addEventListener("pointerup", e => {
+    arrastando = false;
+    areaFoto.releasePointerCapture(e.pointerId);
 });
 
 btnDownload.addEventListener("click", async () => {
-    btnDownload.innerText = "Gerando Card...";
+    btnDownload.textContent = "Gerando Card...";
 
-    const canvas = await html2canvas(
-        document.getElementById("card-evento"),
-        {
-            scale:4,
-            useCORS:true,
-            backgroundColor:null
-        }
-    );
+    const card = document.getElementById("card-evento");
+
+    const canvas = await html2canvas(card, {
+        scale:4,
+        useCORS:true,
+        backgroundColor:null
+    });
 
     canvas.toBlob(async blob => {
-        const file = new File(
-            [blob],
-            "card-oficial.png",
-            { type:"image/png" }
-        );
+        const file = new File([blob], "card-oficial.png", {
+            type:"image/png"
+        });
 
-        if(navigator.canShare && navigator.canShare({ files:[file] })){
+        if(navigator.canShare && navigator.canShare({files:[file]})){
             await navigator.share({
                 title:"Meu Card",
                 files:[file]
@@ -129,6 +116,6 @@ btnDownload.addEventListener("click", async () => {
             link.click();
         }
 
-        btnDownload.innerText = "Salvar Card";
+        btnDownload.textContent = "Salvar Card";
     });
 });
