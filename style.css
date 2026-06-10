@@ -72,16 +72,21 @@ header p{
 /* FOTO POR CIMA DO FUNDO */
 #wrapper-foto{
     position:absolute;
-    top:36.5%;
+    top:25%;
     left:50%;
     transform:translateX(-50%);
-    width:64%;
-    height:41%;
+
+    width:58%;
+    height:42%;
+
     overflow:hidden;
+
     display:flex;
     justify-content:center;
     align-items:center;
-    z-index:5;
+
+    z-index:999;
+
     touch-action:none;
     cursor:grab;
 }
@@ -89,11 +94,15 @@ header p{
 #user-foto-bg{
     position:absolute;
     inset:0;
+
     width:100%;
     height:100%;
+
     object-fit:cover;
+
     filter:blur(20px);
-    opacity:.55;
+    opacity:.35;
+
     display:none;
     z-index:1;
 }
@@ -101,9 +110,14 @@ header p{
 #user-foto{
     position:absolute;
     inset:0;
+
     width:100%;
     height:100%;
+
     object-fit:cover;
+
+    border-radius:18px;
+
     display:none;
     z-index:2;
 }
@@ -201,46 +215,66 @@ button{
 
     body{
         display:block;
-        padding:18px 14px 40px;
-        align-items:initial;
-        justify-content:initial;
+        padding:14px 12px 30px;
     }
 
     .container{
-        max-width:100%;
+        width:100%;
+        max-width:390px;
+        margin:0 auto;
+    }
+
+    header{
+        margin-bottom:14px;
     }
 
     header h1{
-        font-size:1.6rem;
+        font-size:1.5rem;
         line-height:1.15;
     }
 
     header p{
-        font-size:1rem;
+        font-size:.95rem;
     }
 
     .card-box{
         padding:14px;
         border-radius:20px;
+        gap:12px;
     }
 
     #card-evento{
         width:100%;
-        max-width:330px;
-        margin:0 auto 18px;
+        max-width:280px;
+        margin:0 auto 12px;
     }
 
     .controls{
         display:flex;
         flex-direction:column;
-        gap:14px;
-        width:100%;
+        gap:12px;
     }
 
-    input[type="text"],
-    input[type="file"],
-    input[type="range"],
+    .controls label,
+    #painel-ajustes label{
+        width:100%;
+        display:block;
+        font-size:.95rem;
+    }
+
+    input[type="text"]{
+        padding:12px;
+        font-size:1rem;
+    }
+
+    input[type="file"]{
+        width:100%;
+        font-size:.9rem;
+    }
+
     button{
         width:100%;
+        padding:13px;
+        font-size:1rem;
     }
 }
